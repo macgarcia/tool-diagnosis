@@ -1,0 +1,8 @@
+{
+    "sgdb" : "ORACLE",
+    "hostname": "localhost",
+    "port" : "1521",
+    "database" : "XE",
+    "user" : "tcc",
+    "pass" : "tcc"
+}
