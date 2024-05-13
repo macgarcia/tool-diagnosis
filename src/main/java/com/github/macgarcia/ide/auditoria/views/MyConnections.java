@@ -1,22 +1,21 @@
 package com.github.macgarcia.ide.auditoria.views;
 
+import com.github.macgarcia.ide.auditoria.configuration.Configuration;
 import com.github.macgarcia.ide.auditoria.configuration.FactoryMessage;
+import com.github.macgarcia.ide.auditoria.configuration.FactoryScreen;
 import com.github.macgarcia.ide.auditoria.model.InfoDataBase;
 import com.github.macgarcia.ide.auditoria.model.tablemodel.MyConnectionsTableModel;
-import com.github.macgarcia.ide.auditoria.ruleConnection.DataBaseConnection;
-import com.github.macgarcia.ide.auditoria.ruleConnection.MysqlConnection;
-import com.github.macgarcia.ide.auditoria.ruleConnection.OracleConnection;
-import com.github.macgarcia.ide.auditoria.ruleConnection.PostgresConnection;
+import com.github.macgarcia.ide.auditoria.ruleConnection.ConnectionControl;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.Connection;
+import javax.swing.JDesktopPane;
 
 /**
  *
  * @author macgarcia
  */
 public class MyConnections extends javax.swing.JInternalFrame {
-    
+
     private final Integer DOUBLE_CLICK = 2;
 
     private MyConnectionsTableModel model;
@@ -96,32 +95,18 @@ public class MyConnections extends javax.swing.JInternalFrame {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == DOUBLE_CLICK) {
                     InfoDataBase info = model.getInfoDataBase(jTableConnections.getSelectedRow());
-                    connect(getType(info));
+                    try {
+                        ConnectionControl.startConnection(info);
+                        FactoryMessage.mensagemOk("Connection established successfully.");
+                        JDesktopPane desktopPane = getDesktopPane();
+                        Configuration.closeInternalScreen(desktopPane);
+                        FactoryScreen.createScreen(Explorer.class, desktopPane);
+                    } catch (Exception ex) {
+                        FactoryMessage.mensagemAlerta(ex.getMessage());
+                    }
                 }
             }
         });
-    }
-
-    private DataBaseConnection getType(InfoDataBase info) {
-        return switch (info.getSgdb()) {
-            case ORACLE ->
-                new OracleConnection(info);
-            case POSTGRES ->
-                new PostgresConnection(info);
-            case MYSQL ->
-                new MysqlConnection(info);
-            default ->
-                null;
-        };
-    }
-
-    private void connect(DataBaseConnection dataBaseConnection) {
-        Connection con = dataBaseConnection.getConnection();
-        if (con != null) {
-            FactoryMessage.mensagemOk("Connected...");
-        } else {
-            FactoryMessage.mensagemOk("Not Connected...");
-        }
     }
 
 }

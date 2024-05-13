@@ -73,4 +73,8 @@ public class Configuration {
         }
         return valido;
     }
+    
+    public static void closeInternalScreen(JDesktopPane desktop) {
+        desktop.getSelectedFrame().dispose();
+    }
 }

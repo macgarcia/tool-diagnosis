@@ -13,7 +13,7 @@ public class FactoryScreen {
     
     private static final Logger LOGGER = FactoryLog.getLog();
 
-    public static <C extends JInternalFrame> C createScreen(Class<C> classe, final JDesktopPane desktop) {
+    public static <C extends JInternalFrame> C createScreen(Class<C> classe, JDesktopPane desktop) {
         try {
             final C tela = classe.getDeclaredConstructor().newInstance();
             desktop.add(tela);

@@ -20,7 +20,7 @@ public interface DataBaseConnection {
         try {
             return DriverManager.getConnection(this.getUrl(),this.getUser(),this.getPass());
         } catch (SQLException e) {
-            throw new RuntimeException("Error");
+            throw new RuntimeException("Error: " + e.getMessage());
         }
     }
 
