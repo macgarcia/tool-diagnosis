@@ -18,6 +18,7 @@ public final class ConnectionControl {
 
     private static Connection connection;
     private static Sgdb sgdb;
+    private static String nameDatabase;
 
     public static Connection startConnection(InfoDataBase info) {
         
@@ -25,6 +26,7 @@ public final class ConnectionControl {
             throw new RuntimeException("Close the active connection");
         }
         
+        nameDatabase = info.getDatabase();
         sgdb = info.getSgdb();
         
         return switch (sgdb) {
@@ -41,6 +43,10 @@ public final class ConnectionControl {
 
     public static Sgdb getSgdb() {
         return sgdb;
+    }
+
+    public static String getNameDatabase() {
+        return nameDatabase;
     }
     
     public static Connection getConnection() {

@@ -24,7 +24,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.github.macgarcia.access.control.desktop.TelaInicial</mainClass>
+                            <mainClass>com.github.macgarcia.ide.auditoria.MainScreen</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

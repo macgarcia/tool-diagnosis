@@ -1,0 +1,8 @@
+{
+    "sgdb" : "MYSQL",
+    "hostname": "localhost",
+    "port" : "3306",
+    "database" : "sistema_gestao", 
+    "user" : "root",
+    "pass" : "marcos1985"
+}

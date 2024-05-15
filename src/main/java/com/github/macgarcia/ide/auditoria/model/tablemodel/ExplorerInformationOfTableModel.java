@@ -1,15 +1,11 @@
 package com.github.macgarcia.ide.auditoria.model.tablemodel;
 
-import com.github.macgarcia.ide.auditoria.dao.OracleDAO;
 import com.github.macgarcia.ide.auditoria.model.InformationOfTable;
-import com.github.macgarcia.ide.auditoria.model.Sgdb;
-import static com.github.macgarcia.ide.auditoria.model.Sgdb.ORACLE;
-import com.github.macgarcia.ide.auditoria.ruleConnection.ConnectionControl;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
+import com.github.macgarcia.ide.auditoria.dao.GenericDAO;
 
 /**
  *
@@ -21,24 +17,13 @@ public class ExplorerInformationOfTableModel extends AbstractTableModel {
 
     private List<InformationOfTable> listInformationOfTable;
 
-    public ExplorerInformationOfTableModel() {
-        getAllDataTable();
+    public ExplorerInformationOfTableModel(GenericDAO dao) throws SQLException {
+        getInformationOfTable(dao);
     }
 
-    private void getAllDataTable() {
-        Sgdb sgdb = ConnectionControl.getSgdb();
-        try {
-            switch (sgdb) {
-                case ORACLE ->
-                    listInformationOfTable = new OracleDAO().getAllDataTables();
-                default ->
-                    listInformationOfTable = new ArrayList<>();
-            }
-            listInformationOfTable.sort(Comparator.comparing(InformationOfTable::getTableName));
-        } catch (SQLException e) {
-
-        }
-
+    private void getInformationOfTable(GenericDAO dao) throws SQLException {
+        listInformationOfTable = dao.getInformationOfTable();
+        listInformationOfTable.sort(Comparator.comparing(InformationOfTable::getTableName));
     }
 
     @Override
@@ -70,7 +55,7 @@ public class ExplorerInformationOfTableModel extends AbstractTableModel {
         final InformationOfTable data = listInformationOfTable.get(rowIndex);
         return switch (columnIndex) {
             case 0 ->
-                data.getTableName();
+                data.getTableName().toUpperCase();
             case 1 ->
                 data.getQtdColumn();
             case 2 ->

@@ -13,7 +13,7 @@ import javax.swing.table.AbstractTableModel;
  */
 public class MyConnectionsTableModel extends AbstractTableModel {
     
-    private static final Integer NUMBER_OF_COLUMNS = 4;
+    private static final Integer NUMBER_OF_COLUMNS = 5;
     
     private List<InfoDataBase> infoDataBases;
 
@@ -39,10 +39,11 @@ public class MyConnectionsTableModel extends AbstractTableModel {
     @Override
     public String getColumnName(int column) {
         return switch (column) {
-            case 0 -> "HOSTNAME";
-            case 1 -> "PORT";
-            case 2 -> "DATABASE";
-            case 3 -> "USER";
+            case 0 -> "SGDB";
+            case 1 -> "HOSTNAME";
+            case 2 -> "PORT";
+            case 3 -> "DATABASE";
+            case 4 -> "USER";
             default -> "";
         };
     }
@@ -51,10 +52,11 @@ public class MyConnectionsTableModel extends AbstractTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         final InfoDataBase info = infoDataBases.get(rowIndex);
         return switch (columnIndex) {
-            case 0 -> info.getHostname();
-            case 1 -> info.getPort();
-            case 2 -> info.getDatabase();
-            case 3 -> info.getUser();
+            case 0 -> info.getSgdb();
+            case 1 -> info.getHostname();
+            case 2 -> info.getPort();
+            case 3 -> info.getDatabase();
+            case 4 -> info.getUser();
             default -> "";
         };
     }

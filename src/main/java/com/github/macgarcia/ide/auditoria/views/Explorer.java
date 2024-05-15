@@ -1,7 +1,18 @@
 package com.github.macgarcia.ide.auditoria.views;
 
+import com.github.macgarcia.ide.auditoria.configuration.FactoryMessage;
+import com.github.macgarcia.ide.auditoria.dao.MysqlDAO;
+import com.github.macgarcia.ide.auditoria.dao.OracleDAO;
+import com.github.macgarcia.ide.auditoria.dao.PostgresDAO;
+import com.github.macgarcia.ide.auditoria.model.Sgdb;
 import com.github.macgarcia.ide.auditoria.model.tablemodel.ExplorerInformationOfTableModel;
+import com.github.macgarcia.ide.auditoria.querys.SqlMysql;
+import com.github.macgarcia.ide.auditoria.querys.SqlOracle;
+import com.github.macgarcia.ide.auditoria.querys.SqlPostgres;
 import com.github.macgarcia.ide.auditoria.ruleConnection.ConnectionControl;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
@@ -33,10 +44,7 @@ public class Explorer extends javax.swing.JInternalFrame {
 
         jScrollPane2 = new javax.swing.JScrollPane();
         jInformationOfTable = new javax.swing.JTable();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
 
         setClosable(true);
         setIconifiable(true);
@@ -54,52 +62,28 @@ public class Explorer extends javax.swing.JInternalFrame {
         ));
         jScrollPane2.setViewportView(jInformationOfTable);
 
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane3.setViewportView(jTable3);
-
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel2.setText("Information of tables");
-
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel3.setText("All columns");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(28, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(12, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 609, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 584, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addGap(30, 30, 30))
+                    .addComponent(jLabel2)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 609, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(626, 626, 626))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(301, Short.MAX_VALUE))
+                .addGap(12, 12, 12)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(230, Short.MAX_VALUE))
         );
 
         pack();
@@ -109,10 +93,7 @@ public class Explorer extends javax.swing.JInternalFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable jInformationOfTable;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTable jTable3;
     // End of variables declaration//GEN-END:variables
 
     private void screenConfiguration() {
@@ -127,9 +108,19 @@ public class Explorer extends javax.swing.JInternalFrame {
     }
     
     private void createInformationTable() {
-        model = new ExplorerInformationOfTableModel();
-        jInformationOfTable.setModel(model);
-        jInformationOfTable.getTableHeader().setReorderingAllowed(false);
+        try {
+            Sgdb sgdb = ConnectionControl.getSgdb();
+            switch(sgdb) {
+                case MYSQL -> model = new ExplorerInformationOfTableModel(new MysqlDAO(SqlMysql.QUERY_NAME_AND_COLUMNS_ALL_TABLES));
+                case ORACLE -> model = new ExplorerInformationOfTableModel(new OracleDAO(SqlOracle.QUERY_NAME_AND_COLUMNS_ALL_TABLES));
+                case POSTGRES -> model = new ExplorerInformationOfTableModel(new PostgresDAO(SqlPostgres.QUERY_NAME_AND_COLUMNS_ALL_TABLES));
+                default -> throw new RuntimeException("Database not implemented.");
+            }
+            jInformationOfTable.setModel(model);
+            jInformationOfTable.getTableHeader().setReorderingAllowed(false);
+        } catch (SQLException ex) {
+            FactoryMessage.mensagemErro("Erro: " + ex.getMessage());
+        }
     }
 
 }

@@ -1,0 +1,8 @@
+{
+    "sgdb" : "MONGO",
+    "hostname": "localhost",
+    "port" : "5432",
+    "database" : "teste-jdbc-client", 
+    "user" : "postgres",
+    "pass" : "marcos1985"
+}
